@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GPT Chatbot</title>
+	<script src="https://cdn.jsdelivr.net/npm/@openai/api@0.6.0/dist/index.js"></script>
+	<script>
+		// Replace YOUR_API_KEY with your actual API key
+		const openai = new OpenAI(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);
+
+		// This function makes a request to the GPT API and returns the generated text
+		async function generateText(prompt) {
+			const model = 'text-davinci-002';
+			const maxTokens = 50;
+			const response = await openai.complete({
+				engine: model,
+				prompt: prompt + '? ',
+				maxTokens: maxTokens
+			});
+			let text = response.data.choices[0].text.trim();
+			// Add some additional text to make the response more conversational
+			text += " What else can I help you with?";
+			return text;
+		}
+
+		// This function updates the chat log with a message from the user
+		function addMessageFromUser(message) {
+			const chatLog = document.getElementById('chat-log');
+			const messageElement = document.createElement('div');
+			messageElement.className = 'message message-from-user';
+			messageElement.innerText = message;
+			chatLog.appendChild(messageElement);
+		}
+
+		// This function updates the chat log with a message from the chatbot
+		function addMessageFromChatbot(message) {
+			const chatLog = document.getElementById('chat-log');
+			const messageElement = document.createElement('div');
+			messageElement.className = 'message message-from-chatbot';
+			messageElement.innerText = message;
+			chatLog.appendChild(messageElement);
+		}
+
+		// This function handles user input and displays the chatbot's response
+		async function handleInput() {
+			const inputElement = document.getElementById('user-input');
+			const userInput = inputElement.value;
+			inputElement.value = '';
+			addMessageFromUser(userInput);
+			const chatbotResponse = await generateText(userInput);
+			addMessageFromChatbot(chatbotResponse);
+		}
+	</script>
+	<style>
+		.chat-window {
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			height: 400px;
+			overflow-y: scroll;
+			padding: 10px;
+		}
+		.message {
+			margin: 10px 0;
+			padding: 10px;
+			border-radius: 5px;
+		}
+		.message-from-user {
+			background-color: #eee;
+			text-align: right;
+		}
+		.message-from-chatbot {
+			background-color: #f0f0f0;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>GPT Chatbot</h1>
+	</header>
+
+	<main>
+		<div class="chat-window" id="chat-log"></div>
+		<div>
+			<input type="text" id="user-input" placeholder="Type your question here...">
+			<button onclick="handleInput()">Ask</button>
+		</div>
+	</main>
+</body>
+</html>
